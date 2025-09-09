@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install:*)",
+      "Bash(npm run lint)",
+      "Bash(podman compose:*)",
+      "Bash(npm run build:*)",
+      "Bash(curl:*)",
+      "Bash(podman exec:*)",
+      "WebSearch",
+      "Bash(npm run start:test:*)",
+      "Bash(npm test:*)",
+      "Bash(npm ls:*)",
+      "Bash(npm run test:coverage:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

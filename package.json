@@ -1,0 +1,22 @@
+{
+  "name": "garmin-heart-rate-analyzer",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "backend",
+    "frontend"
+  ],
+  "scripts": {
+    "start:dev": "docker-compose up",
+    "start:test": "docker-compose -f docker-compose.test.yml up",
+    "test": "docker-compose -f docker-compose.test.yml up --abort-on-container-exit",
+    "build": "docker-compose build",
+    "down": "docker-compose down -v",
+    "down:test": "docker-compose -f docker-compose.test.yml down -v",
+    "install:all": "npm install && cd backend && npm install && cd ../frontend && npm install"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}
