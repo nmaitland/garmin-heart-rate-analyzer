@@ -28,7 +28,8 @@ describe('API Service', () => {
           userId: 'user123',
           startDate: '2024-01-01',
           endDate: '2024-01-02'
-        }
+        },
+        timeout: 30000
       });
 
       expect(result).toEqual(mockData);
@@ -40,14 +41,17 @@ describe('API Service', () => {
 
       await expect(
         fetchHeartRateData('user123', '2024-01-01', '2024-01-02')
-      ).rejects.toThrow(errorMessage);
+      ).rejects.toMatchObject({
+        message: errorMessage
+      });
 
       expect(mockedAxios.get).toHaveBeenCalledWith('/api/heart-rate', {
         params: {
           userId: 'user123',
           startDate: '2024-01-01',
           endDate: '2024-01-02'
-        }
+        },
+        timeout: 30000
       });
     });
 

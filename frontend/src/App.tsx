@@ -1,7 +1,7 @@
 import React from 'react';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
-import Dashboard from './components/Dashboard.tsx';
+import Dashboard from './components/Dashboard';
 
 const theme = createTheme({
   palette: {

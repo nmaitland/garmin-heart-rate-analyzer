@@ -14,8 +14,8 @@ ENV WDS_SOCKET_PORT=0
 # Copy package files
 COPY package*.json ./
 
-# Install dependencies
-RUN npm install
+# Install dependencies (clear node_modules first to avoid ENOTEMPTY errors)
+RUN rm -rf node_modules && npm install
 
 # Copy source code
 COPY . .

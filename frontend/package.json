@@ -39,7 +39,8 @@
     "jest-environment-jsdom": "^29.7.0",
     "prettier": "^3.2.5",
     "react-scripts": "5.0.1",
-    "source-map-loader": "^5.0.0"
+    "source-map-loader": "^5.0.0",
+    "ts-jest": "^29.4.1"
   },
   "scripts": {
     "start": "react-scripts start",

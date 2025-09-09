@@ -75,7 +75,8 @@ describe('HeartRateChart', () => {
     render(<HeartRateChart data={[]} />);
     
     expect(screen.getByTestId('heart-rate-chart')).toBeInTheDocument();
-    expect(screen.getByTestId('mock-line-chart')).toBeInTheDocument();
+    expect(screen.getByText(/No Heart Rate Data Available/i)).toBeInTheDocument();
+    expect(screen.getByText(/Please fetch heart rate data to see the chart/i)).toBeInTheDocument();
   });
 
   it('passes correct data to LineChart', () => {
@@ -100,5 +101,37 @@ describe('HeartRateChart', () => {
     expect(screen.getByTestId('heart-rate-chart')).toBeInTheDocument();
     const lineChart = screen.getByTestId('mock-line-chart');
     expect(lineChart).toHaveAttribute('data-chart-data', JSON.stringify(singleData));
+  });
+
+  it('handles invalid data gracefully', () => {
+    const invalidData = [
+      { timestamp: '2024-01-01T12:00:00Z', heartRate: 75 },
+      { timestamp: 'invalid-date', heartRate: 80 },
+      { timestamp: '2024-01-01T13:00:00Z', heartRate: -5 },
+      null,
+      { timestamp: '2024-01-01T14:00:00Z', heartRate: 'invalid' }
+    ] as any;
+    
+    render(<HeartRateChart data={invalidData} />);
+    
+    expect(screen.getByTestId('heart-rate-chart')).toBeInTheDocument();
+    // Should only render valid data (first item)
+    const lineChart = screen.getByTestId('mock-line-chart');
+    const expectedData = [{ timestamp: '2024-01-01T12:00:00Z', heartRate: 75 }];
+    expect(lineChart).toHaveAttribute('data-chart-data', JSON.stringify(expectedData));
+  });
+
+  it('shows error message for completely invalid data', () => {
+    const invalidData = [
+      { timestamp: 'invalid-date', heartRate: -5 },
+      null,
+      { timestamp: '2024-01-01T14:00:00Z', heartRate: 'invalid' }
+    ] as any;
+    
+    render(<HeartRateChart data={invalidData} />);
+    
+    expect(screen.getByTestId('heart-rate-chart')).toBeInTheDocument();
+    expect(screen.getByText(/No Heart Rate Data Available/i)).toBeInTheDocument();
+    expect(screen.getByText(/The data contains invalid entries and cannot be displayed/i)).toBeInTheDocument();
   });
 }); 

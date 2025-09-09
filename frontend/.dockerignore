@@ -1,0 +1,10 @@
+npm-debug.log
+.env
+.env.dev
+.env.prod
+*.md
+.DS_Store
+.idea
+.vscode
+.git
+.gitignore

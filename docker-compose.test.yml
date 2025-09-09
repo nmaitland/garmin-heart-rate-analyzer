@@ -27,32 +27,32 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     volumes:
-      - ./backend:/app
-      - /app/node_modules
+      - ./backend/src:/app/src
+      - ./backend/test:/app/test
     env_file:
       - .env.test
     environment:
       - NODE_ENV=test
       - DB_PORT=5432
+      - CI=true      
     depends_on:
       postgres:
         condition: service_healthy
-    command: sh -c "npm install --force && npm run test:e2e"    
+    command: sh -c "npm run test:e2e --verbose"    
 
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
     volumes:
-      - ./frontend:/app
-      - /app/node_modules
+      - ./frontend/src:/app/src
     env_file:
       - .env.test
     environment:
       - NODE_ENV=test
     depends_on:
       - backend
-    command: sh -c "npm install --force && npm run test"
+    command: sh -c "npm run test --verbose"
 
 volumes:
   postgres_data:

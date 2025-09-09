@@ -7,12 +7,12 @@ A full-stack application for syncing and analyzing heart rate data from Garmin C
 **Frontend:** React with TypeScript, Material-UI, Recharts  
 **Backend:** NestJS with TypeScript, Swagger API documentation  
 **Database:** PostgreSQL with TypeORM  
-**Infrastructure:** Docker Compose for containerized development
+**Infrastructure:** Docker/Podman Compose for containerized development
 
 ## 🚀 Quick Start
 
 ### Prerequisites
-- Docker and Docker Compose
+- Docker and Docker Compose **OR** Podman and Podman Compose
 - Node.js 16+ (for local development)
 - Git
 
@@ -30,8 +30,16 @@ A full-stack application for syncing and analyzing heart rate data from Garmin C
    ```
 
 3. **Start development environment**
+   
+   **Using Docker:**
    ```bash
    npm run start:dev
+   ```
+   
+   **Using Podman:**
+   ```bash
+   # Replace docker-compose with podman-compose in package.json scripts, or run directly:
+   podman-compose -f docker-compose.yml up --build
    ```
 
    This starts all services:
@@ -42,7 +50,9 @@ A full-stack application for syncing and analyzing heart rate data from Garmin C
 
 ## 📋 Available Commands
 
-### Root Level (Docker Compose)
+### Root Level (Docker/Podman Compose)
+
+**Using npm scripts (Docker by default):**
 ```bash
 npm run start:dev     # Start all services in development mode
 npm run start:test    # Start test environment
@@ -51,6 +61,14 @@ npm run build         # Build all services
 npm run down          # Stop and cleanup development
 npm run down:test     # Stop and cleanup test environment
 npm run install:all   # Install dependencies for all services
+```
+
+**Using Podman directly:**
+```bash
+podman-compose -f docker-compose.yml up --build         # Start development
+podman-compose -f docker-compose.test.yml up --build    # Start test environment
+podman-compose -f docker-compose.yml down               # Stop and cleanup
+podman-compose -f docker-compose.test.yml down          # Stop test cleanup
 ```
 
 ### Backend (NestJS)
@@ -122,7 +140,7 @@ npm run build         # Production build
 ### Development Experience
 - Hot reload for both frontend and backend
 - Comprehensive test coverage
-- Docker-first development workflow
+- Container-first development workflow (Docker/Podman)
 - Automated API documentation generation
 
 ## 🗄️ Database Schema
@@ -185,7 +203,7 @@ REACT_APP_API_URL=http://localhost:3000
 - File size limit: 200-300 lines (refactor beyond this threshold)
 - Environment-aware configuration
 - No data mocking in development/production environments
-- Docker volumes enable hot reload while maintaining data persistence
+- Container volumes enable hot reload while maintaining data persistence
 
 ## 🔐 Security Considerations
 

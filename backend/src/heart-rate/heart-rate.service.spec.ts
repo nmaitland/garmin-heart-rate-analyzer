@@ -57,10 +57,10 @@ describe('HeartRateService', () => {
       expect(mockHeartRateRepository.find).toHaveBeenCalledWith({
         where: {
           userId,
-          timestamp: {
-            $gte: startDate,
-            $lte: endDate,
-          },
+          timestamp: expect.objectContaining({
+            _type: 'between',
+            _value: [startDate, endDate],
+          }),
         },
         order: {
           timestamp: 'ASC',

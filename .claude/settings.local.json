@@ -11,7 +11,11 @@
       "Bash(npm run start:test:*)",
       "Bash(npm test:*)",
       "Bash(npm ls:*)",
-      "Bash(npm run test:coverage:*)"
+      "Bash(npm run test:coverage:*)",
+      "Bash(npm run test:*)",
+      "Bash(podman-compose:*)",
+      "Bash(timeout 10m podman compose -f docker-compose.test.yml up --abort-on-container-exit)",
+      "Bash(podman logs:*)"
     ],
     "deny": [],
     "ask": []

@@ -174,13 +174,21 @@ describe('Dashboard', () => {
   it('handles API errors gracefully', async () => {
     const consoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
     
-    // Skip initial useEffect by not providing userId initially
+    // Clear all mocks and set up fresh state
     mockedAxios.get.mockClear();
+    mockedAxios.get.mockReset();
     
-    render(<Dashboard />);
+    await act(async () => {
+      render(<Dashboard />);
+    });
     
     const userIdInput = screen.getByLabelText(/User ID/i);
     const fetchButton = screen.getByText(/Fetch Heart Rate Data/i);
+    
+    // Set up rejection for both API calls that happen when userId is set and button is clicked
+    mockedAxios.get
+      .mockRejectedValueOnce(new Error('API Error'))  // Heart rate data call
+      .mockRejectedValueOnce(new Error('API Error')); // Average call
     
     await act(async () => {
       fireEvent.change(userIdInput, { target: { value: 'test-user' } });
@@ -189,9 +197,6 @@ describe('Dashboard', () => {
     await waitFor(() => {
       expect(fetchButton).toBeEnabled();
     });
-    
-    // Set up the rejection after the button is enabled
-    mockedAxios.get.mockRejectedValueOnce(new Error('API Error'));
     
     await act(async () => {
       fireEvent.click(fetchButton);
@@ -206,24 +211,16 @@ describe('Dashboard', () => {
   });
 
   it('calculates average heart rate correctly', async () => {
-    // Skip initial useEffect by not providing userId initially
+    // Clear all mocks including beforeEach setup
+    jest.clearAllMocks();
     mockedAxios.get.mockClear();
+    mockedAxios.get.mockReset();
     
-    render(<Dashboard />);
-    
-    const userIdInput = screen.getByLabelText(/User ID/i);
-    const fetchButton = screen.getByText(/Fetch Heart Rate Data/i);
-    
-    await act(async () => {
-      fireEvent.change(userIdInput, { target: { value: 'test-user' } });
-    });
-    
-    await waitFor(() => {
-      expect(fetchButton).toBeEnabled();
-    });
-    
-    // Set up mocks after button is enabled, right before clicking
+    // Set up fresh mocks BEFORE rendering - need 4 calls total
+    // 2 for initial useEffect when userId is set, then 2 for button click
     mockedAxios.get
+      .mockResolvedValueOnce({ data: [] })  // Initial empty data
+      .mockResolvedValueOnce({ data: 0 })   // Initial zero average
       .mockResolvedValueOnce({ 
         data: [
           { timestamp: '2024-01-01T00:00:00Z', heartRate: 70 },
@@ -232,6 +229,22 @@ describe('Dashboard', () => {
         ]
       })
       .mockResolvedValueOnce({ data: 80 });
+    
+    await act(async () => {
+      render(<Dashboard />);
+    });
+    
+    const userIdInput = screen.getByLabelText(/User ID/i);
+    const fetchButton = screen.getByText(/Fetch Heart Rate Data/i);
+    
+    await act(async () => {
+      fireEvent.change(userIdInput, { target: { value: 'test-user' } });
+    });
+    
+    // Wait for the useEffect to complete after userId change
+    await waitFor(() => {
+      expect(fetchButton).toBeEnabled();
+    });
     
     await act(async () => {
       fireEvent.click(fetchButton);

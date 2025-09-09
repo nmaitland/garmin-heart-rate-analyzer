@@ -6,7 +6,11 @@ import { StyledEngineProvider } from '@mui/material/styles';
 
 const theme = createTheme();
 
-const AllTheProviders = ({ children }: { children: React.ReactNode }) => {
+interface AllTheProvidersProps {
+  children: React.ReactNode;
+}
+
+const AllTheProviders: React.FC<AllTheProvidersProps> = ({ children }) => {
   return (
     <StyledEngineProvider injectFirst>
       <ThemeProvider theme={theme}>

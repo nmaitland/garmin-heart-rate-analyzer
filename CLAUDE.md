@@ -10,11 +10,12 @@ This is a Garmin Heart Rate Analyzer application built with a modern full-stack 
 - Frontend: React with TypeScript, Material-UI, Recharts for data visualization
 - Backend: NestJS with TypeScript, Swagger API documentation
 - Database: PostgreSQL with TypeORM
-- Infrastructure: Docker Compose for containerized development
+- Infrastructure: Docker/Podman Compose for containerized development
 
 ## Development Commands
 
-### Root Level Commands (Docker Compose)
+### Root Level Commands (Docker/Podman Compose)
+**Using npm scripts (Docker by default):**
 ```bash
 # Start development environment (all services)
 npm run start:dev
@@ -36,6 +37,24 @@ npm run down:test
 
 # Install all dependencies (root, backend, frontend)
 npm run install:all
+```
+
+**Using Podman directly:**
+```bash
+# Start development environment (all services)
+podman-compose -f docker-compose.yml up --build
+
+# Start test environment
+podman-compose -f docker-compose.test.yml up --build
+
+# Run all tests in containerized environment
+podman-compose -f docker-compose.test.yml up --abort-on-container-exit
+
+# Stop and cleanup development environment
+podman-compose -f docker-compose.yml down
+
+# Stop and cleanup test environment
+podman-compose -f docker-compose.test.yml down
 ```
 
 ### Backend Commands (NestJS in backend/ directory)
@@ -125,7 +144,7 @@ npm run build             # Create production build
 - **Test** (`.env.test`): Isolated test database, controlled environment
 - **Production** (`.env.prod`): Optimized for performance, security
 
-**Docker Services:**
+**Container Services:**
 - PostgreSQL: Port 54322 (mapped from 5432), persistent volume
 - Backend API: Port 3000, hot reload enabled
 - Frontend: Port 3001, WebSocket support for development
@@ -137,8 +156,8 @@ npm run build             # Create production build
 
 ## Development Workflow
 
-### Docker-First Development
-All development occurs in Docker containers:
+### Container-First Development
+All development occurs in containers (Docker/Podman):
 - Volume mounts enable hot reload for both services
 - Database persists data between restarts
 - Services automatically restart on failure
