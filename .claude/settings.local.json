@@ -15,7 +15,9 @@
       "Bash(npm run test:*)",
       "Bash(podman-compose:*)",
       "Bash(timeout 10m podman compose -f docker-compose.test.yml up --abort-on-container-exit)",
-      "Bash(podman logs:*)"
+      "Bash(podman logs:*)",
+      "Bash(npm audit:*)",
+      "Bash(npm outdated)"
     ],
     "deny": [],
     "ask": []

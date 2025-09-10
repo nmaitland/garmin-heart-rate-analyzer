@@ -23,12 +23,14 @@ services:
       "
 
   backend:
+    container_name: backend_test
     build:
       context: ./backend
       dockerfile: Dockerfile
     volumes:
       - ./backend/src:/app/src
       - ./backend/test:/app/test
+      - ./backend/coverage:/app/coverage
     env_file:
       - .env.test
     environment:
@@ -38,21 +40,23 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-    command: sh -c "npm run test:e2e --verbose"    
+    command: sh -c "npm run test:cov --verbose"    
 
   frontend:
+    container_name: frontend_test
     build:
       context: ./frontend
       dockerfile: Dockerfile
     volumes:
       - ./frontend/src:/app/src
+      - ./frontend/coverage:/app/coverage
     env_file:
       - .env.test
     environment:
       - NODE_ENV=test
     depends_on:
       - backend
-    command: sh -c "npm run test --verbose"
+    command: sh -c "npm run test:coverage --verbose"
 
 volumes:
   postgres_data:

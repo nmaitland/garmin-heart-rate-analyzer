@@ -1,12 +1,10 @@
-# You can override the included template(s) by including variable overrides
-# SAST customization: https://docs.gitlab.com/ee/user/application_security/sast/#customizing-the-sast-settings
-# Secret Detection customization: https://docs.gitlab.com/user/application_security/secret_detection/pipeline/configure
-# Dependency Scanning customization: https://docs.gitlab.com/ee/user/application_security/dependency_scanning/#customizing-the-dependency-scanning-settings
-# Container Scanning customization: https://docs.gitlab.com/ee/user/application_security/container_scanning/#customizing-the-container-scanning-settings
-# Note that environment variables can be set in several places
-# See https://docs.gitlab.com/ee/ci/variables/#cicd-variable-precedence
+default:
+  image: docker:24.0.5
+  services:
+    - docker:24.0.5-dind
 
 stages:
+  - build
   - test
   - security
 
@@ -15,5 +13,62 @@ include:
   - template: Security/Secret-Detection.gitlab-ci.yml
 
 variables:
+  DOCKER_DRIVER: overlay2
+  DOCKER_TLS_CERTDIR: "/certs"
   SAST_ENABLED: 'true'
   SECRET_DETECTION_ENABLED: 'true'
+  GARMIN_USERNAME: test_user
+  GARMIN_PASSWORD: test_user
+  DB_HOST: postgres
+  DB_PORT: 54322
+  DB_USERNAME: postgres
+  DB_PASSWORD: postgres
+  DB_DATABASE: garmin_heart_rate_test
+  NODE_ENV: test
+  REACT_APP_API_PORT: 3001
+  REACT_APP_API_URL: http://localhost:${REACT_APP_API_PORT}
+
+
+build:
+  stage: build
+  image: docker:latest
+  script:
+    - docker-compose build
+  artifacts:
+    expire_in: 1 hour
+    # reports:
+    #   dotenv: .env.test
+  only:
+    - main
+    - merge_requests
+
+test:
+  stage: test
+  image: docker:latest
+  script:
+    - mkdir -p backend/coverage frontend/coverage coverage
+    - docker-compose -f docker-compose.test.yml build
+    - docker-compose -f docker-compose.test.yml run frontend
+    - docker-compose -f docker-compose.test.yml wait backend
+    - apk add --no-cache nodejs npm lcov python3 py3-pip
+    - python3 -m venv /tmp/venv
+    - source /tmp/venv/bin/activate && pip install lcov_cobertura
+    - lcov -o coverage/combined-lcov.info -a backend/coverage/lcov.info -a frontend/coverage/lcov.info
+    - genhtml coverage/combined-lcov.info --output-directory coverage/html --ignore-errors source,unmapped --synthesize-missing
+    - source /tmp/venv/bin/activate && lcov_cobertura coverage/combined-lcov.info --output coverage/cobertura-coverage.xml
+  after_script:
+    - docker-compose -f docker-compose.test.yml down -v
+  artifacts:
+    reports:
+      coverage_report:
+        coverage_format: cobertura
+        path: coverage/cobertura-coverage.xml
+    paths:
+      - backend/coverage/
+      - frontend/coverage/
+      - coverage/
+    expire_in: 1 week
+  coverage: '/All files[^|]*\|[^|]*\s+([\d\.]+)/'
+  only:
+    - main
+    - merge_requests

@@ -18,6 +18,7 @@ build/
 .env.dev.local
 .env.test.local
 .env.prod.local
+!.env.test
 
 # Logs
 *.log
