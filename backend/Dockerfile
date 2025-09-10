@@ -9,7 +9,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install all dependencies (including devDependencies for testing)
-RUN npm ci
+RUN npm install
 
 # Install dependencies (clear node_modules first to avoid ENOTEMPTY errors)
 # RUN rm -rf node_modules && npm install
