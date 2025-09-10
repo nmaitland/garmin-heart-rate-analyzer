@@ -33,6 +33,10 @@ coverage/
 *.lcov
 .nyc_output
 
+# Test output files
+junit.xml
+**/junit.xml
+
 # OS Files
 .DS_Store
 .DS_Store?

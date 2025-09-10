@@ -56,6 +56,9 @@ test:
   stage: test
   image: docker:latest
   script:
+    # - npm install
+    # - cd backend && npm install
+    # - cd frontend && npm install
     - mkdir -p backend/coverage frontend/coverage coverage
     - docker-compose -f docker-compose.test.yml build
     - docker-compose -f docker-compose.test.yml run frontend
@@ -73,10 +76,15 @@ test:
       coverage_report:
         coverage_format: cobertura
         path: coverage/cobertura-coverage.xml
+      junit: 
+        - backend/junit.xml
+        - frontend/junit.xml
     paths:
       - backend/coverage/
       - frontend/coverage/
       - coverage/
+      - backend/junit.xml
+      - frontend/junit.xml
     expire_in: 1 week
   coverage: '/All files[^|]*\|[^|]*\s+([\d\.]+)/'
   only:

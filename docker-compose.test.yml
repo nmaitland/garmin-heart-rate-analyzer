@@ -31,6 +31,7 @@ services:
       - ./backend/src:/app/src
       - ./backend/test:/app/test
       - ./backend/coverage:/app/coverage
+      - ./backend:/host-backend
     env_file:
       - .env.test
     environment:
@@ -40,7 +41,7 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-    command: sh -c "npm run test:cov --verbose"    
+    command: sh -c "npm run test:cov --verbose && cp junit.xml /host-backend/ || true"    
 
   frontend:
     container_name: frontend_test
@@ -50,13 +51,14 @@ services:
     volumes:
       - ./frontend/src:/app/src
       - ./frontend/coverage:/app/coverage
+      - ./frontend:/host-frontend
     env_file:
       - .env.test
     environment:
       - NODE_ENV=test
     depends_on:
       - backend
-    command: sh -c "npm run test:coverage --verbose"
+    command: sh -c "npm run test:coverage --verbose && cp junit.xml /host-frontend/ || true"
 
 volumes:
   postgres_data:
