@@ -15,8 +15,8 @@ include:
 variables:
   DOCKER_DRIVER: overlay2
   DOCKER_TLS_CERTDIR: "/certs"
-  SAST_ENABLED: 'true'
-  SECRET_DETECTION_ENABLED: 'true'
+  SAST_ENABLED: "true"
+  SECRET_DETECTION_ENABLED: "true"
   GARMIN_USERNAME: test_user
   GARMIN_PASSWORD: test_user
   DB_HOST: postgres
@@ -28,6 +28,16 @@ variables:
   REACT_APP_API_PORT: 3001
   REACT_APP_API_URL: http://localhost:${REACT_APP_API_PORT}
 
+# Override security jobs to run only for main branch or merge requests
+semgrep-sast:
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+    - if: $CI_MERGE_REQUEST_ID
+
+secret_detection:
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+    - if: $CI_MERGE_REQUEST_ID
 
 build:
   stage: build
@@ -72,3 +82,6 @@ test:
   only:
     - main
     - merge_requests
+
+
+
