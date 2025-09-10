@@ -1,3 +1,12 @@
+# Status
+
+
+[![pipeline status](https://gitlab.com/nemach/garmin-heart-rate-analyzer/badges/main/pipeline.svg)](https://gitlab.com/nemach/garmin-heart-rate-analyzer/-/commits/main)
+
+[![coverage report](https://gitlab.com/nemach/garmin-heart-rate-analyzer/badges/main/coverage.svg)](https://gitlab.com/nemach/garmin-heart-rate-analyzer/-/commits/main)
+
+[![Latest Release](https://gitlab.com/nemach/garmin-heart-rate-analyzer/-/badges/release.svg)](https://gitlab.com/nemach/garmin-heart-rate-analyzer/-/releases)
+
 # Garmin Heart Rate Analyzer
 
 A full-stack application for syncing and analyzing heart rate data from Garmin Connect, providing comprehensive visualization and statistical analysis capabilities.
