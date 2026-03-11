@@ -1,0 +1,66 @@
+name: Build & Test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+env:
+  GARMIN_USERNAME: test_user
+  GARMIN_PASSWORD: test_user
+  DB_HOST: postgres
+  DB_PORT: 54322
+  DB_USERNAME: postgres
+  DB_PASSWORD: postgres
+  DB_DATABASE: garmin_heart_rate_test
+  NODE_ENV: test
+  REACT_APP_API_PORT: 3001
+  REACT_APP_API_URL: http://localhost:3001
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build
+        run: docker compose build
+
+  test:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build test containers
+        run: docker compose -f docker-compose.test.yml build
+
+      - name: Run tests
+        run: docker compose -f docker-compose.test.yml up --abort-on-container-exit --exit-code-from frontend
+
+      - name: Collect coverage
+        run: |
+          mkdir -p coverage
+          sudo apt-get update && sudo apt-get install -y lcov
+          lcov -o coverage/combined-lcov.info -a backend/coverage/lcov.info -a frontend/coverage/lcov.info || true
+          genhtml coverage/combined-lcov.info --output-directory coverage/html --ignore-errors source,unmapped --synthesize-missing || true
+
+      - name: Tear down
+        if: always()
+        run: docker compose -f docker-compose.test.yml down -v
+
+      - name: Upload coverage
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: coverage/
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: |
+            backend/junit.xml
+            frontend/junit.xml
